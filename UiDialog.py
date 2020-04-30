@@ -8,6 +8,7 @@ class Ui_Dialog(object):
     def __init__(self):
         self.label = QtWidgets.QLabel(Dialog)
         self.pushButton = QtWidgets.QPushButton(Dialog)
+        self.getAllChampDatas()
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -32,12 +33,17 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.pushButton.setText(_translate("Dialog", "Apply"))
 
+    # get All Champion name/image from official LoL site
+    def getAllChampDatas(self): {
+
+    }
+
     def onApplyBtnClick(self):
         ourBanList, ourPickList, yourBanList, yourPickList = self.cropImages(self.captureClient())
         ourBanList, ourPickList, yourBanList, yourPickList \
             = self.getChampNames(ourBanList, ourPickList, yourBanList, yourPickList)
 
-        
+
 
     # return ImageFile
     def captureClient(self):
@@ -78,10 +84,14 @@ class Ui_Dialog(object):
             #yourBans[i] = client.crop(())
         return ourPicks, ourBans, yourPicks, yourBans
 
-    # return 4 Array<String>
+    # paremeters : 4 Array<ImageFile>
+    # return : 4 Array<String>
     def getChampNames(self, ourBanList, ourPickList, yourBanList, yourPickList): {
-
+#        for image in ourBanList :
+#            for data in
     }
+
+
 
 if __name__ == "__main__":
     import sys
