@@ -29,8 +29,25 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.pushButton.setText(_translate("Dialog", "Apply"))
 
-    def onApplyBtnClick(self): {
-        # TODO :
+    def onApplyBtnClick(self):
+        ourBanList, ourPickList, yourBanList, yourPickList = self.cropImages(self.captureClient())
+        ourBanList, ourPickList, yourBanList, yourPickList \
+            = self.getChampNames(ourBanList, ourPickList, yourBanList, yourPickList)
+
+        
+
+    # return ImageFile
+    def captureClient(self): {
+
+    }
+
+    # return 4 Array<ImageFile>
+    def cropImages(self, imageFile): {
+
+    }
+
+    # return 4 Array<String>
+    def getChampNames(self, ourBanList, ourPickList, yourBanList, yourPickList): {
 
     }
 
