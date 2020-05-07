@@ -1,37 +1,49 @@
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtGui import QPixmap
-from PIL import ImageGrab
+import sys
+from io import BytesIO
+
+import requests
 import win32gui
+from PIL import ImageGrab, Image
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QListView, \
+    QListWidget, QListWidgetItem
 
 
-class Ui_Dialog(object):
+class UiDialog(QWidget):
+
     def __init__(self):
-        self.label = QtWidgets.QLabel(Dialog)
-        self.pushButton = QtWidgets.QPushButton(Dialog)
-        self.getAllChampDatas()
+        super().__init__()
+        self.initUI()
 
-    def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(400, 471)
-        self.pushButton.setGeometry(QtCore.QRect(30, 420, 75, 23))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(self.onApplyBtnClick)
+    def initUI(self):
+        description = QLabel()
+        description.setText('This is guide')
 
-        self.label.setGeometry(QtCore.QRect(150, 100, 201, 231))
-        self.label.setText("")
-        self.label.setObjectName("label")
+        applyButton = QPushButton()
+        applyButton.setText('Apply')
+        applyButton.clicked.connect(self.onApplyBtnClick)
 
-        # https://wikidocs.net/38038
-        pixmap = QPixmap('C:\\Users\\YunJeongHyeon\\Pictures\\suninatas\\0.PNG')
-        self.label.setPixmap(pixmap.scaled(self.label.size(), QtCore.Qt.IgnoreAspectRatio))
+        leftVBox = QVBoxLayout()
+        leftVBox.addWidget(description)
+        leftVBox.addWidget(applyButton)
 
-        self.retranslateUi(Dialog)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        listWidget = QListWidget()
+        listWidget.setViewMode(QListWidget.IconMode)
 
-    def retranslateUi(self, Dialog):
-        _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.pushButton.setText(_translate("Dialog", "Apply"))
+        for i in range(0, 3):
+            item = QListWidgetItem()
+            icon = QIcon()
+            icon.addPixmap(QPixmap('C:\\Users\\YunJeongHyeon\\Pictures\\suninatas\\0.PNG'))
+            item.setIcon(icon)
+            listWidget.addItem(item)
+
+        hBox = QHBoxLayout()
+        hBox.addLayout(leftVBox)
+        hBox.addWidget(listWidget)
+        self.setLayout(hBox)
+
+        self.setWindowTitle('PickCounter')
+        self.setGeometry(200, 200, 400, 500)
 
     # get All Champion name/image from official LoL site
     def getAllChampDatas(self): {
@@ -86,18 +98,15 @@ class Ui_Dialog(object):
 
     # paremeters : 4 Array<ImageFile>
     # return : 4 Array<String>
-    def getChampNames(self, ourBanList, ourPickList, yourBanList, yourPickList): {
-#        for image in ourBanList :
-#            for data in
-    }
+    def getChampNames(self, ourBanList, ourPickList, yourBanList, yourPickList):
+        response = requests.get(url)
+        img = Image.open(BytesIO(response.content))
+
 
 
 
 if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Dialog = QtWidgets.QDialog()
-    ui = Ui_Dialog()
-    ui.setupUi(Dialog)
-    Dialog.show()
+    app = QApplication(sys.argv)
+    ui = UiDialog()
+    ui.show()
     sys.exit(app.exec_())
