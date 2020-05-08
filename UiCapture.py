@@ -50,24 +50,24 @@ def cropImages(image) :
                                     p_pos['start_y'],
                                     p_pos['start_x'] + p_pos['size'],
                                     p_pos['start_y'] + p_pos['size'])))
-                                    
+
         our_b.insert(i, image.crop((b_pos['start_x'],
                                     b_pos['start_y'],
                                     b_pos['start_x'] + b_pos['size'],
                                     b_pos['start_y'] + b_pos['size'])))
 
-        enemy_p.insert(i, image.crop((b_pos['enemy_x'],
+        enemy_p.insert(i, image.crop((p_pos['enemy_x'],
+                                      p_pos['start_y'],
+                                      p_pos['enemy_x'] + p_pos['size'],
+                                      p_pos['start_y'] + p_pos['size'])))
+
+        enemy_b.insert(i, image.crop((b_pos['enemy_x'],
                                       b_pos['start_y'],
                                       b_pos['enemy_x'] + b_pos['size'],
                                       b_pos['start_y'] + b_pos['size'])))
 
-        enemy_p.insert(i, image.crop((b_pos['enemy_x'],
-                                      b_pos['start_y'],
-                                      b_pos['enemy_x'] + b_pos['size'],
-                                      b_pos['start_y'] + b_pos['size'])))
-        
         p_pos['start_y'] += p_pos['margin']
         b_pos['start_x'] += p_pos['margin']
-        b_pos['enemy_x'] += p_pos['margin']
+        b_pos['enemy_x'] += b_pos['margin']
 
     return our_p, our_b, enemy_p, enemy_b
