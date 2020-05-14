@@ -3,7 +3,7 @@ from PIL import ImageGrab, Image
 
 def captureClient() :
     
-    window = win32gui.FindWindow(None, r'League of Legends')
+    window = win32gui.FindWindow(None, 'PickCounter')# r'League of Legends')
     win32gui.SetForegroundWindow(window)
 
     position = win32gui.GetWindowRect(window)

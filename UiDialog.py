@@ -55,51 +55,13 @@ class UiDialog(QWidget):
     }
 
     def onApplyBtnClick(self):
-        ourBanList, ourPickList, yourBanList, yourPickList = self.cropImages(self.captureClient(), 1600, 900)
+        import UiCapture
+        ourBanList, ourPickList, yourBanList, yourPickList = UiCapture.cropImages(UiCapture.captureClient())
+
+        print('result', ourBanList, ourPickList, yourBanList, yourPickList)
+
         ourBanList, ourPickList, yourBanList, yourPickList \
             = self.getChampNames(ourBanList, ourPickList, yourBanList, yourPickList)
-
-    # return ImageFile
-    def captureClient(self):
-        client = win32gui.FindWindow(None, 'PickCounter') #r'League of Legends')
-
-        win32gui.SetForegroundWindow(client)
-        dimensions = win32gui.GetWindowRect(client)
-        print(dimensions)
-
-        capture = ImageGrab.grab(bbox=(dimensions[0], dimensions[1], dimensions[2], dimensions[3]))
-        width, height = capture.size
-        return capture, width, height
-
-    # return 4 Array<ImageFile>
-    def cropImages(self, imageFile, width, height):
-        pickPos1600 = [83, 144, 50, 50]
-        banPos1600 = [20, 40, 33, 33]
-
-        #testvalue
-        pickPosTest = [0, 0, 50, 50]
-        banPosTest = [0, 0, 33, 33]
-
-        ourPicks, ourBans, yourPicks, yourBans = []
-        pickMargin, banMargin = 0
-
-        if width == 1600 and height == 900:
-            pickPos = pickPos1600
-            banPos = banPos1600
-        else :
-            #window size not found #testvalue
-            pickPos = pickPosTest
-            banPos = banPosTest
-
-        for i in range(0, 5) :
-            pickPos[1] = pickPos[1] + pickMargin #margin added START_Y
-            banPos[0] = banPos[0] + banMargin #margin added START_X
-
-            ourPicks[i] = imageFile.crop((pickPos[0], pickPos[1], pickPos[2], pickPos[3]))
-            ourBans[i] = imageFile.crop((banPos[0], banPos[1], banPos[2], banPos[3]))
-            #yourPicks[i] = client.crop(()) #? need to check position
-            #yourBans[i] = client.crop(())
-        return ourPicks, ourBans, yourPicks, yourBans
 
     # paremeters : 4 Array<ImageFile>
     # return : 4 Array<String>
