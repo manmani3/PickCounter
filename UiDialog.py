@@ -27,41 +27,46 @@ class UiDialog(QWidget):
         leftVBox.addWidget(description)
         leftVBox.addWidget(applyButton)
 
-        listWidget = QListWidget()
-        listWidget.setViewMode(QListWidget.IconMode)
-
-        for i in range(0, 3):
-            item = QListWidgetItem()
-            item.setText('Garen' + str(i))
-            icon = QIcon()
-            icon.addPixmap(self.getChampImage('tmp'))
-            item.setIcon(icon)
-            listWidget.addItem(item)
+        self.listWidget = QListWidget()
+        self.listWidget.setViewMode(QListWidget.IconMode)
 
         hBox = QHBoxLayout()
         hBox.addLayout(leftVBox)
-        hBox.addWidget(listWidget)
+        hBox.addWidget(self.listWidget)
         self.setLayout(hBox)
 
         self.setWindowTitle('PickCounter')
         self.setGeometry(200, 200, 500, 300)
-
-    def getChampImage(self, name):
-        return QPixmap('C:\\Users\\YunJeongHyeon\\Pictures\\suninatas\\0.PNG')
 
     # get All Champion name/image from official LoL site
     def getAllChampDatas(self): {
 
     }
 
+    def updateRecommendChampions(self, champList):
+        # self.listWidget.clear()
+        for i in range(0, 5):
+            champList[i].save('image'+str(i)+'.png')
+            item = QListWidgetItem()
+            item.setText('champ' + str(i))
+            icon = QIcon()
+            icon.addPixmap(QPixmap('image'+str(i)+'.png'))
+            item.setIcon(icon)
+            self.listWidget.addItem(item)
+
     def onApplyBtnClick(self):
         import UiCapture
         ourBanList, ourPickList, yourBanList, yourPickList = UiCapture.cropImages(UiCapture.captureClient())
 
-        print('result', ourBanList, ourPickList, yourBanList, yourPickList)
-
-        ourBanList, ourPickList, yourBanList, yourPickList \
-            = self.getChampNames(ourBanList, ourPickList, yourBanList, yourPickList)
+        try:
+            self.updateRecommendChampions(ourBanList)
+            self.updateRecommendChampions(ourPickList)
+            self.updateRecommendChampions(yourBanList)
+            self.updateRecommendChampions(yourPickList)
+        except Exception as ex:
+            print('updateRecommendChampions', ex)
+        # ourBanList, ourPickList, yourBanList, yourPickList \
+        #     = self.getChampNames(ourBanList, ourPickList, yourBanList, yourPickList)
 
     # paremeters : 4 Array<ImageFile>
     # return : 4 Array<String>
