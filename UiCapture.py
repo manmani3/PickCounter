@@ -3,7 +3,7 @@ from PIL import ImageGrab, Image
 
 def captureClient() :
 
-    window = win32gui.FindWindow(None, 'PickCounter')# r'League of Legends')
+    window = win32gui.FindWindow(None, r'League of Legends')
     win32gui.SetForegroundWindow(window)
 
     position = win32gui.GetWindowRect(window)
@@ -66,11 +66,10 @@ def cropImages(image) :
                                           p_pos['start_y'],
                                           p_pos['enemy_x'] + p_pos['size'],
                                           p_pos['start_y'] + p_pos['size'])))
-        except Exception as ex :
+            p_pos['start_y'] += p_pos['margin']
+            b_pos['start_x'] += b_pos['margin']
+            b_pos['enemy_x'] += b_pos['margin']
+        except Exception as ex:
             print('cropImages:exception in image crop', ex)
-
-        p_pos['start_y'] += p_pos['margin']
-        b_pos['start_x'] += b_pos['margin']
-        b_pos['enemy_x'] += b_pos['margin']
 
     return our_b, our_p, enemy_b, enemy_p
