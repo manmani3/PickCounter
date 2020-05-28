@@ -46,7 +46,7 @@ class UiDialog(QWidget):
     def updateRecommendChampions(self, champList):
         # self.listWidget.clear()
         for i in range(0, 5):
-            champList[i].save('image'+str(i)+'.png')
+            champList[i].save('image'+str(self.index)+str(i)+'.png')
             item = QListWidgetItem()
             item.setText('champ' + str(i))
             icon = QIcon()
@@ -59,9 +59,13 @@ class UiDialog(QWidget):
         ourBanList, ourPickList, yourBanList, yourPickList = UiCapture.cropImages(UiCapture.captureClient())
 
         try:
+            self.index = 0
             self.updateRecommendChampions(ourBanList)
+            self.index = 1
             self.updateRecommendChampions(ourPickList)
+            self.index = 2
             self.updateRecommendChampions(yourBanList)
+            self.index = 3
             self.updateRecommendChampions(yourPickList)
         except Exception as ex:
             print('updateRecommendChampions', ex)
