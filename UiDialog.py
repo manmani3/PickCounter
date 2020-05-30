@@ -1,13 +1,12 @@
 import sys
-from io import BytesIO
 
-import requests
-from PIL import ImageGrab, Image
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QListView, \
     QListWidget, QListWidgetItem
 
 import LoLSocketClient
+import LoLTemplateMatch
+
 
 class UiDialog(QWidget):
 
@@ -39,18 +38,17 @@ class UiDialog(QWidget):
         self.setGeometry(200, 200, 500, 300)
 
     # get All Champion name/image from official LoL site
-    def getAllChampDatas(self): {
-
-    }
+    def getAllChampDatas(self):
+        pass
 
     def updateRecommendChampions(self, champList):
         # self.listWidget.clear()
         for i in range(0, 5):
-            champList[i].save('image'+str(self.index)+str(i)+'.png')
+            champList[i].save('image' + str(self.index) + str(i) + '.png')
             item = QListWidgetItem()
             item.setText('champ' + str(i))
             icon = QIcon()
-            icon.addPixmap(QPixmap('image'+str(i)+'.png'))
+            icon.addPixmap(QPixmap('image' + str(i) + '.png'))
             item.setIcon(icon)
             self.listWidget.addItem(item)
 
@@ -69,20 +67,17 @@ class UiDialog(QWidget):
             self.updateRecommendChampions(yourPickList)
         except Exception as ex:
             print('updateRecommendChampions', ex)
-        # ourBanList, ourPickList, yourBanList, yourPickList \
-        #     = self.getChampNames(ourBanList, ourPickList, yourBanList, yourPickList)
+
+        # classify images to champion info
+        ourPickList = LoLTemplateMatch.matching(ourPickList)
+        yourPickList = LoLTemplateMatch.matching(yourPickList)
+        ourBanList = LoLTemplateMatch.matching(ourBanList)
+        yourBanList = LoLTemplateMatch.matching(yourBanList)
 
         recommendList = LoLSocketClient.requestRecommendChampionList(ourPickList, yourPickList, ourBanList, yourBanList)
 
         # TODO : update the recommend champion list, not print
-        print(recommendList)
-
-    # paremeters : 4 Array<ImageFile>
-    # return : 4 Array<String>
-    def getChampNames(self, ourBanList, ourPickList, yourBanList, yourPickList):
-        response = requests.get(url)
-        img = Image.open(BytesIO(response.content))
-
+        print('final result\n', recommendList)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
