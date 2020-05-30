@@ -2,12 +2,12 @@ import sys
 from io import BytesIO
 
 import requests
-import win32gui
 from PIL import ImageGrab, Image
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QListView, \
     QListWidget, QListWidgetItem
 
+import LoLSocketClient
 
 class UiDialog(QWidget):
 
@@ -71,6 +71,11 @@ class UiDialog(QWidget):
             print('updateRecommendChampions', ex)
         # ourBanList, ourPickList, yourBanList, yourPickList \
         #     = self.getChampNames(ourBanList, ourPickList, yourBanList, yourPickList)
+
+        recommendList = LoLSocketClient.requestRecommendChampionList(ourPickList, yourPickList, ourBanList, yourBanList)
+
+        # TODO : update the recommend champion list, not print
+        print(recommendList)
 
     # paremeters : 4 Array<ImageFile>
     # return : 4 Array<String>
