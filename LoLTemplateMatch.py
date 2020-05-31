@@ -35,7 +35,7 @@ def matching(pilImageList):
             min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
 
             #print(min_loc)
-            result.append(getChampion.parsePick(min_loc))
+            result.append(getChampion.parsePick(min_loc)['id'])
 
             #print(getChampion.getChampion(min_loc))
 

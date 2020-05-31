@@ -44,11 +44,11 @@ class UiDialog(QWidget):
     def updateRecommendChampions(self, champList):
         # self.listWidget.clear()
         for i in range(0, 5):
-            champList[i].save('image' + str(self.index) + str(i) + '.png')
+            champList[i].save('.\\data\\image' + str(self.index) + str(i) + '.png')
             item = QListWidgetItem()
             item.setText('champ' + str(i))
             icon = QIcon()
-            icon.addPixmap(QPixmap('image' + str(i) + '.png'))
+            icon.addPixmap(QPixmap('.\\data\\image' + str(self.index) + str(i) + '.png'))
             item.setIcon(icon)
             self.listWidget.addItem(item)
 

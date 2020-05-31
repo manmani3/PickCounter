@@ -1,24 +1,14 @@
 import socket
-import json
 
 def parseChampionList(message):
     messages = message.replace('(', '').replace(')', '').replace('],', ']\n').split('\n')
 
-    # data = ast.literal_eval(data)
+    myPickList = [int(i) for i in messages[0].replace('[', '').replace(']', '').split(',')]
+    yourPickList = [int(i) for i in messages[1].replace('[', '').replace(']', '').split(',')]
+    myBanList = [int(i) for i in messages[2].replace('[', '').replace(']', '').split(',')]
+    yourBanList = [int(i) for i in messages[3].replace('[', '').replace(']', '').split(',')]
 
-    result = [[]]
-
-    for i in range(0, len(messages)):
-        splitedList = messages[i].replace('[', '').replace(']', '').split('},')
-
-        for j in range(0, len(splitedList)):
-            if j == (len(splitedList) - 1):
-                result[i].append(json.loads(splitedList[j]))
-            else:
-                result[i].append(json.loads(splitedList[j] + '}'))
-
-    # return myPickList, yourPickList, myBanList, yourBanList
-    return result[0], result[1], result[2], result[3]
+    return myPickList, yourPickList, myBanList, yourBanList
 
 
 def requestRecommendChampionList(myPickList, youPickList, myBanList, yourBanList):
@@ -29,6 +19,8 @@ def requestRecommendChampionList(myPickList, youPickList, myBanList, yourBanList
     client_socket.connect((HOST, PORT))
 
     message = str((myPickList, youPickList, myBanList, yourBanList))
+    print('message', message)
+    print('parsing :', parseChampionList(message))
 
     client_socket.send(message.encode())
     response = client_socket.recv(1024).decode()
