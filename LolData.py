@@ -19,13 +19,13 @@ def fileToJson(path):
 
 
 '''
-params : 4 lists
+params
+    myPickList, yourPickList, myBanList, yourBanList : integer lists
 '''
 
 
 def extractMatchedGame(myPickList, yourPickList, myBanList, yourBanList):
     games = fileToJson('D:\\Anaconda_3\\envs\pengsu\\kr_top-tier_gameData_v1.txt')
-    print('datas', games[999])
 
     matchedGame = []
     for game in games:
@@ -118,10 +118,10 @@ champMap = {
     'Jax': 24,
     'Shyvana': 102,
     'Kalista': 429,
-    'Dr. Mundo': 36,
+    'Dr.Mundo': 36,
     'Ivern': 427,
     'Diana': 131,
-    'Tahm Kench': 223,
+    'TahmKench': 223,
     'Brand': 63,
     'Sejuani': 113,
     'Vladimir': 8,
@@ -165,6 +165,7 @@ champMap = {
     'MissFortune': 21,
     'MonkeyKing': 62,
     'Blitzcrank': 53,
+    'Senna': 235,
     'Shen': 98,
     'Braum': 201,
     'XinZhao': 5,
@@ -178,10 +179,10 @@ champMap = {
     'VelKoz': 161,
     'Zyra': 143,
     'Nami': 267,
-    'Jarvan IV': 59,
+    'JarvanIV': 59,
     'Ezreal': 81,
     'Yuumi': 350,
-    'Kaisa': 145,
+    'KaiSa': 145,
     'Neeko': 518,
     'Zoe': 142,
     'Xayah': 498,
@@ -191,13 +192,16 @@ champMap = {
     'Pyke': 555,
     'Camille': 164,
     'Qiyana': 246,
-    'Rakan': 497
+    'Rakan': 497,
+    'Aphelios': 523,
+    'Sett': 875
 }
 
 def getChampionName(championId):
     return list(champMap.keys())[list(champMap.values()).index(championId)]
 
 def getChampionId(championName):
+    championName = championName.replace(' ', '')
     return champMap[championName]
 
 ### main ###
