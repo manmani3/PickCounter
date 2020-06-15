@@ -1,4 +1,5 @@
 import json
+import requests
 
 
 def fileToJson(path):
@@ -16,6 +17,7 @@ def fileToJson(path):
     json_data = json.loads(string)
 
     return json_data
+
 
 
 '''
@@ -46,7 +48,7 @@ def extractMatchedGame(myPickList, yourPickList, myBanList, yourBanList):
 
 
 champMap = {
-    'Unknown' : 0,
+    'Unknown': 0,
     'Zac': 154,
     'Aatrox': 266,
     'Thresh': 412,
@@ -165,7 +167,6 @@ champMap = {
     'MissFortune': 21,
     'MonkeyKing': 62,
     'Blitzcrank': 53,
-    'Senna': 235,
     'Shen': 98,
     'Braum': 201,
     'XinZhao': 5,
@@ -194,15 +195,87 @@ champMap = {
     'Qiyana': 246,
     'Rakan': 497,
     'Aphelios': 523,
-    'Sett': 875
-}
+    'Sett': 875,
+    'Senna': 235,
+    'Wukong': 62
+} # no space, no apostrophe(') in champion name
 
 def getChampionName(championId):
-    return list(champMap.keys())[list(champMap.values()).index(championId)]
+    try:
+        result = list(champMap.keys())[list(champMap.values()).index(championId)]
+    except Exception as e:
+        result = 'Unknown'
+
+    if result == 'Unknown':
+        print('can not find matched champion name :', championId)
+
+    return result
+
 
 def getChampionId(championName):
-    championName = championName.replace(' ', '')
-    return champMap[championName]
+    championName = championName.replace('\'', '').replace(' ', '').split('&')[0]
+    try:
+        result = champMap[championName]
+    except Exception as e:
+        result = 0
+
+    if result == 0:
+        print('can not find matched champion id from map :', championName)
+    return result
+
+
+champCluster = { # no space, no apostrophe(') in champion name
+    1: ['Darius', 'Yorick', 'Illaoi', 'Udyr'],
+    2: ['Aatrox', 'Dr.Mundo', 'Tryndamere', 'Garen', 'Riven', 'Gnar', 'Katarina', 'Kled', 'Mordekaiser', 'Renekton',
+        'Rengar', 'Rumble', 'RekSai', 'Shyvana', 'Sett', 'Vladimir', 'Zac', 'Yasuo'],
+    3: ['Akali', 'Kennen', 'Zed', 'LeeSin', 'Shen'],
+    4: ['Quinn', 'Lucian', 'Jayce', 'Kalista', 'Corki', 'Kindred', 'Vayne', 'Ezreal', 'Varus', 'Aphelios', 'Ashe',
+        'Caitlyn', 'MissFortune', 'Draven', 'KaiSa', 'Sivir', 'Jinx', 'Jhin', 'Twitch', 'KogMaw', 'Xayah', 'Tristana',
+        'Thresh', 'Senna'],
+    5: ['Fiora', 'Camille', 'ChoGath', 'Ekko', 'Galio', 'Gangplank', 'Gragas', 'Singed', 'Hecarim', 'Nasus', 'Urgot',
+        'Irelia', 'Jax', 'Sion', 'Talon', 'Malphite', 'Kayn', 'Fizz', 'Diana', 'Pantheon', 'Qiyana', 'Maokai',
+        'Nocturne', 'Olaf', 'Ornn', 'Pyke', 'Graves', 'Trundle', 'Shaco', 'Poppy', 'Evelynn', 'Warwick', 'MasterYi',
+        'Nunu', 'Ivern', 'JarvanIV', 'Rammus', 'XinZhao', 'KhaZix', 'Vi', 'Sejuani', 'Amumu', 'Sylas', 'Volibear',
+        'Blitzcrank', 'Leona', 'Nautilus', 'Taric', 'Wukong', 'MonkeyKing', 'Alistar', 'Rakan', 'Braum', 'TahmKench'],
+    6: ['Cassiopeia', 'Teemo', 'Fiddlesticks', 'Heimerdinger', 'Kayle', 'TwistedFate', 'Kassadin', 'Zoe', 'LeBlanc',
+        'Ahri', 'Orianna', 'Malzahar', 'Lux', 'Annie', 'Anivia', 'AurelionSol', 'Lissandra', 'Neeko', 'Veigar',
+        'Viktor', 'Azir', 'Elise', 'Ryze', 'Nidalee', 'Karthus', 'Swain', 'Taliyah', 'Syndra', 'VelKoz', 'Bard',
+        'Yuumi', 'Lulu', 'Morgana', 'Soraka', 'Janna', 'Xerath', 'Karma', 'Zyra', 'Sona', 'Nami', 'Ziggs', 'Brand',
+        'Zilean'],
+}
+
+def getChampionCluster(championName):
+    championName = championName.replace('\'', '').replace(' ', '').split('&')[0]
+    for key, value in champCluster.items():
+        for champion in value:
+            if championName == champion:
+                return key
+    print('can not find the cluster : ', championName)
+    return 0
+
+def request_URL(queryKey):
+    base_url = 'https://kr.api.riotgames.com'
+    RIOT_API_KEY = 'RGAPI-5b02e909-777a-4ede-b386-02d0be16ceef'
+
+    url = base_url + queryKey + '?api_key=' + RIOT_API_KEY
+    try:
+        response = requests.get(url)
+        # Reference : https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+        retry_code = [429, 500, 503, 504]
+        if response.status_code in retry_code:
+            print('Warning: %d, %s'%(response.status_code, response.reason))
+            response = requests.get(url)
+        if response.status_code != 200:
+            print('Error: Occured request error!')
+            print('- URL :', url)
+            print('- status_code :', response.status_code)
+            print('- reason :', response.reason)
+            # raise SystemExit('Occured request error! (%d, %s)'%(response.status_code, response.reason))
+            print(('Occured request error! (%d, %s)'%(response.status_code, response.reason)))
+        return response
+    except requests.exceptions.RequestException as e:
+        # raise SystemExit(e)
+        print('request_URL', e)
 
 ### main ###
 '''

@@ -17,8 +17,8 @@ summonerNameField : str
 else params : integer lists
 '''
 def requestRecommendChampionList(position, summonerNameField, myPickList, youPickList, myBanList, yourBanList):
-    # HOST = '13.125.182.165'
-    HOST = '127.0.0.1'
+    HOST = '13.125.182.165'
+    # HOST = '127.0.0.1'
     PORT = 6677
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

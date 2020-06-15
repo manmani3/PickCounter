@@ -1,11 +1,12 @@
+# exe파일 만들기 : pyinstaller -w -F UiDialog.py
+
 import sys
 
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QListView, \
+from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, \
     QListWidget, QListWidgetItem, QTextEdit, QRadioButton
 
 import LoLSocketClient
-import LoLTemplateMatch
 
 from os import walk
 import LolData
@@ -18,7 +19,7 @@ class UiDialog(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(100, 100, 600, 500)
+        self.setGeometry(100, 100, 500, 500)
         self.setStyleSheet("background-color: #FFFFFF;")
         positionLabel = QLabel('추천받을 포지션')
         titleFont = positionLabel.font()
@@ -138,22 +139,32 @@ class UiDialog(QWidget):
         description4.setFont(font3)
         description4.setStyleSheet('color:#DF3A01')
 
-        description5 = QLabel(' 3. 본인의 차례가 되었을때 Apply 버튼을 클릭해주세요\n', self)
-        description5.setFont(font3)
-        description5.setStyleSheet('color:#DF3A01')
+        self.description5 = QLabel(' 3. 본인의 차례가 되었을때 Apply 버튼을 클릭해주세요\n', self)
+        self.description5.setFont(font3)
+        self.description5.setStyleSheet('color:#DF3A01')
+
+        self.additionalDescription = QLabel()
 
         totalBox = QVBoxLayout()
         totalBox.addWidget(description)
         totalBox.addWidget(description2)
         totalBox.addWidget(description3)
         totalBox.addWidget(description4)
-        totalBox.addWidget(description5)
+        totalBox.addWidget(self.description5)
+        totalBox.addWidget(self.additionalDescription)
 
         totalBox.addLayout(hBox)
+        '''
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.red)
+        self.setPalette(p)
+        '''
 
         self.setLayout(totalBox)
         self.setWindowTitle('PickCounter')
         self.setWindowIcon(QIcon("PC_icon2.png"))
+
 
     def updateRecommendChampions(self, champList):
         self.listWidget.clear()
@@ -166,8 +177,9 @@ class UiDialog(QWidget):
                     for filename in filenames:
                         if str(champId) == filename.split('_')[1].split('.')[0]:
                             item = QListWidgetItem()
-                            text = champ['name'] + ' / score:' + str(champ['score']) + '\nO:' + str(champ['O']) + \
-                                   '\nGm:' + str(champ['Gm']) + '\nGy:' + str(champ['Gy']) + '\nM:' + str(champ['M'])
+                            text = champ['name'] + ' / score:' + str(round(champ['score'], 4)) +\
+                                   '\nO:' + str(round(champ['O'], 4)) + '\nM:' + str(round(champ['M'], 4)) +\
+                                   '\nC:' + str(round(champ['C'], 4))
                             print(text)
                             item.setText(text)
                             icon = QIcon()
@@ -178,63 +190,44 @@ class UiDialog(QWidget):
                     break
 
         except Exception as e:
-            print('error', e)
+            print('updateRecommendChampions error', e)
 
-        '''
-        for i in range(0, 5):
-            champList[i].save('.\\data\\image' + str(self.index) + str(i) + '.png')
-            item = QListWidgetItem()
-            item.setText('champ' + str(i))
-            icon = QIcon()
-            icon.addPixmap(QPixmap('.\\data\\image' + str(self.index) + str(i) + '.png'))
-            item.setIcon(icon)
-            self.listWidget.addItem(item)
-        '''
+    def updateDescription(self, description):
+        item = QListWidgetItem()
+        item.setText(description)
+        self.listWidget.addItem(item)
+
+        self.additionalDescription.setText(description)
+        self.description5.setText(description)
 
     def onApplyBtnClick(self):
-        import UiCapture
-        # TODO : remove
-        '''
-        ourBanList, ourPickList, yourBanList, yourPickList = UiCapture.cropImages(UiCapture.captureClient())
-
         try:
-            self.index = 0
-            self.updateRecommendChampions(ourBanList)
-            self.index = 1
-            self.updateRecommendChampions(ourPickList)
-            self.index = 2
-            self.updateRecommendChampions(yourBanList)
-            self.index = 3
-            self.updateRecommendChampions(yourPickList)
-        except Exception as ex:
-            print('updateRecommendChampions', ex)
-            
-        # classify images to champion info
-        ourPickList = LoLTemplateMatch.matching(ourPickList)
-        yourPickList = LoLTemplateMatch.matching(yourPickList)
-        ourBanList = LoLTemplateMatch.matching(ourBanList)
-        yourBanList = LoLTemplateMatch.matching(yourBanList)
-        '''
+            self.listWidget.clear()
+            item = QListWidgetItem()
+            item.setText('서버에서 데이터를 가져오는 중...')
+            self.listWidget.addItem(item)
 
-        summonerName = self.summonerNameField.toPlainText()
+            summonerName = self.summonerNameField.toPlainText()
 
-        position = 'NONE'
-        if self.topRadioButton.isChecked():
-            position = 'TOP'
-        elif self.jungleRadioButton.isChecked():
-            position = 'JUNGLE'
-        elif self.midRadioButton.isChecked():
-            position = 'MID'
-        elif self.adcRadioButton.isChecked():
-            position = 'ADC'
-        elif self.supportRadioButton.isChecked():
-            position = 'SUPPORT'
+            position = 'NONE'
+            if self.topRadioButton.isChecked():
+                position = 'TOP'
+            elif self.jungleRadioButton.isChecked():
+                position = 'JUNGLE'
+            elif self.midRadioButton.isChecked():
+                position = 'MID'
+            elif self.adcRadioButton.isChecked():
+                position = 'ADC'
+            elif self.supportRadioButton.isChecked():
+                position = 'SUPPORT'
 
-        # Test
-        ourPickList, yourPickList, ourBanList, yourBanList = [81, 350, 122, 245], [64, 266, 105, 523, 53], [1], [3]
+            # Test
+            ourPickList, yourPickList, ourBanList, yourBanList = [81, 350, 122, 245], [64, 266, 105, 523, 53], [1], [3]
 
-        recommendList = LoLSocketClient.requestRecommendChampionList(position, summonerName, ourPickList, yourPickList,
-                                                                     ourBanList, yourBanList)
+            recommendList = LoLSocketClient.requestRecommendChampionList(position, summonerName, ourPickList, yourPickList,
+                                                                         ourBanList, yourBanList)
+        except Exception as e:
+            self.updateDescription(str(e))
 
         self.updateRecommendChampions(recommendList)
 
