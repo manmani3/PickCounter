@@ -1,16 +1,20 @@
-# exe파일 만들기 : pyinstaller -w -F UiDialog.py
+# exe파일 만들기 : pyinstaller UiDialog.spec
+# 기존 dist파일 삭제 후, pyinstaller -w -F UiDialog.py
 
 import sys
+import os
 
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, \
-    QListWidget, QListWidgetItem, QTextEdit, QRadioButton
+    QListWidget, QListWidgetItem, QTextEdit, QRadioButton, QLayout
 
 import LoLSocketClient
 
 from os import walk
-import LolData
 
+import LoLTemplateMatch
+import LolData
+import UiCapture
 
 class UiDialog(QWidget):
 
@@ -19,7 +23,7 @@ class UiDialog(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(100, 100, 500, 500)
+        self.setGeometry(100, 100, 550, 600)
         self.setStyleSheet("background-color: #FFFFFF;")
         positionLabel = QLabel('추천받을 포지션')
         titleFont = positionLabel.font()
@@ -169,23 +173,55 @@ class UiDialog(QWidget):
     def updateRecommendChampions(self, champList):
         self.listWidget.clear()
 
+        rank = 1
         try:
             for champ in champList:
                 champId = LolData.getChampionId(champ['name'])
                 print('\nchamp:', champ['name'], "(", champId, ")")
-                for (dirpath, dirnames, filenames) in walk('.\\assets\\champion\\'):
+                for (dirpath, dirnames, filenames) in walk('.\\assets\\'):
                     for filename in filenames:
                         if str(champId) == filename.split('_')[1].split('.')[0]:
                             item = QListWidgetItem()
-                            text = champ['name'] + ' / score:' + str(round(champ['score'], 4)) +\
+
+                            champName = QLabel(champ['name'])
+                            champNameFont = champName.font()
+                            champNameFont.setBold(True)
+                            champName.setFont(champNameFont)
+                            text = 'score:' + str(round(champ['score'], 4)) +\
                                    '\nO:' + str(round(champ['O'], 4)) + '\nM:' + str(round(champ['M'], 4)) +\
                                    '\nC:' + str(round(champ['C'], 4))
-                            print(text)
-                            item.setText(text)
-                            icon = QIcon()
-                            icon.addPixmap(QPixmap('.\\assets\\champion\\' + filename))
-                            item.setIcon(icon)
+
+                            vl = QVBoxLayout()
+                            vl.addWidget(champName)
+                            vl.addWidget(QLabel(text))
+
+                            widget = QWidget()
+                            widgetLayout = QHBoxLayout()
+
+                            rankText = QLabel(str(rank) + ') ')
+                            rankFont = rankText.font()
+                            rankFont.setPointSize(20)
+                            rankFont.setBold(True)
+                            rankText.setFont(rankFont)
+
+                            widgetLayout.addWidget(rankText)
+                            relativePath = '.\\assets\\' + filename
+                            pixmap = QPixmap(self.resource_path(relativePath))
+
+                            smaller_pixmap = pixmap.scaled(75, 75)
+                            img = QLabel()
+                            img.setPixmap(smaller_pixmap)
+                            widgetLayout.addWidget(img)
+                            widgetLayout.addLayout(vl)
+                            widgetLayout.addStretch()
+
+                            widgetLayout.setSizeConstraint(QLayout.SetFixedSize)
+                            widget.setLayout(widgetLayout)
+                            item.setSizeHint(widget.sizeHint())
+
                             self.listWidget.addItem(item)
+                            self.listWidget.setItemWidget(item, widget)
+                            rank = rank + 1
                             break
                     break
 
@@ -222,7 +258,13 @@ class UiDialog(QWidget):
                 position = 'SUPPORT'
 
             # Test
-            ourPickList, yourPickList, ourBanList, yourBanList = [81, 350, 122, 245], [64, 266, 105, 523, 53], [1], [3]
+            ourPickList, yourPickList, ourBanList, yourBanList = UiCapture.cropImages(UiCapture.captureClient()) # [81, 350], [105, 523, 53], [1, 2, 3, 4, 5], [6, 7, 8, 9, 10]
+
+            # classify images to champion info
+            ourPickList = LoLTemplateMatch.matching(ourPickList)
+            yourPickList = LoLTemplateMatch.matching(yourPickList)
+            ourBanList = LoLTemplateMatch.matching(ourBanList)
+            yourBanList = LoLTemplateMatch.matching(yourBanList)
 
             recommendList = LoLSocketClient.requestRecommendChampionList(position, summonerName, ourPickList, yourPickList,
                                                                          ourBanList, yourBanList)
@@ -232,6 +274,14 @@ class UiDialog(QWidget):
         self.updateRecommendChampions(recommendList)
 
         print('final result\n', recommendList)
+
+    def resource_path(self, relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
 
 
 if __name__ == "__main__":

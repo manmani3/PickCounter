@@ -35,7 +35,6 @@ def requestRecommendChampionList(position, summonerNameField, myPickList, youPic
     except Exception as e:
         print(e)
 
-    # TODO : decide how to create the recommend champion list format
     print('Received from the server :', response)
 
     client_socket.close()
