@@ -5,6 +5,14 @@ import cv2 as cv
 import numpy as np
 import getChampion
 
+def imread(filename, flags=cv.IMREAD_GRAYSCALE, dtype=np.uint8):
+    try:
+        n = np.fromfile(filename, dtype)
+        img = cv.imdecode(n, flags)
+        return img
+    except Exception as e:
+        print(e)
+        return None
 
 def resource_path(relative_path):
     try:
@@ -12,15 +20,15 @@ def resource_path(relative_path):
     except Exception:
         base_path = os.path.abspath(".")
 
-    return os.path.join(base_path, relative_path)
+    return os.path.join(base_path, relative_path).strip()
 
 def matching(pilImageList):
     result = []
 
     # 1) 캡처 이미지 가져옴
-    relativePath = 'imgs\\sprite-champion-set.png'
-    print('resource_path : ', resource_path(relativePath))
-    ordImg = cv.imread(resource_path(relativePath), cv.IMREAD_GRAYSCALE)
+    relativePath = 'assets\\sprite_champion_set.png'
+    print('matching... resource_path : ', resource_path(relativePath))
+    ordImg = imread(resource_path(relativePath)) # cv.imread(resource_path(relativePath), cv.IMREAD_GRAYSCALE) # # hangulFilePathImageRead(resource_path(relativePath))
     #capturedImg = cv.imread(path, cv.IMREAD_GRAYSCALE)
     for pilImage in pilImageList:
         capturedImg = cv.cvtColor(np.array(pilImage), cv.COLOR_RGB2GRAY)

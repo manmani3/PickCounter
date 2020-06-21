@@ -1,5 +1,4 @@
 # exe파일 만들기 : pyinstaller UiDialog.spec
-# 기존 dist파일 삭제 후, pyinstaller -w -F UiDialog.py
 
 import sys
 import os
@@ -23,7 +22,7 @@ class UiDialog(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(100, 100, 550, 600)
+        self.setGeometry(30, 220, 550, 600)
         self.setStyleSheet("background-color: #FFFFFF;")
 
         fontDB = QFontDatabase()
@@ -121,46 +120,45 @@ class UiDialog(QWidget):
         hBox.addLayout(rightVBox)
         hBox.addStretch(1)
 
-        description = QLabel('※ 주의사항 ※', self)
-        font1 = description.font()
+        label_notice = QLabel('※ 주의사항 ※', self)
+        font1 = label_notice.font()
         font1.setPointSize(19)
         font1.setBold(True)
         font1.setFamily("나눔스퀘어 ExtraBold")
-        description.setStyleSheet('color:#DF3A01')
-        description.setFont(font1)
+        label_notice.setStyleSheet('color:#DF3A01')
+        label_notice.setFont(font1)
 
-        description2 = QLabel('하기의 내용을 반드시 숙지 후 프로그램을 실행하십시오.')
-        font2 = description2.font()
+        label_sub_notice = QLabel('하기의 내용을 반드시 숙지 후 프로그램을 실행하십시오.')
+        font2 = label_sub_notice.font()
         font2.setPointSize(14)
         font2.setFamily("나눔스퀘어 ExtraBold")
-        description2.setFont(font2)
+        label_sub_notice.setFont(font2)
+        label_sub_notice.setStyleSheet('color:#DF3A01')
+
+        description1 = QLabel(' 1. 클라이언트 해상도는 1280x720을 권장', self)
+        font = description1.font()
+        font.setPointSize(10.5)
+        font.setFamily("나눔스퀘어 Bold")
+        description1.setFont(font)
+        description1.setStyleSheet('color:#DF3A01')
+
+        description2 = QLabel(' 2. 추천받고 싶은 Position을 선택하고 본인의 닉네임을 입력하세요.', self)
+        description2.setFont(font)
         description2.setStyleSheet('color:#DF3A01')
 
-        description3 = QLabel(' 1. 본인의 챔피언을 미리 선택하지 마시고 빈칸으로 두십시오.', self)
-        font3 = description3.font()
-        font3.setPointSize(10.5)
-        # font3.setBold(True)
-        font3.setFamily("나눔스퀘어 Bold")
-        description3.setFont(font3)
+        description3 = QLabel(' 3. 본인의 픽 순서가 되었을때 Apply 버튼을 클릭해 주세요.\n' +
+                              '  잠시 후에 추천 순위 리스트가 나타납니다.\n\n', self)
+
+        description3.setFont(font)
         description3.setStyleSheet('color:#DF3A01')
 
-        description4 = QLabel(' 2. 추천받고 싶은 Position을 선택하고 본인의 닉네임을 입력하세요.', self)
-        description4.setFont(font3)
-        description4.setStyleSheet('color:#DF3A01')
-
-        self.description5 = QLabel(' 3. 본인의 차례가 되었을때 Apply 버튼을 클릭해주세요\n', self)
-        self.description5.setFont(font3)
-        self.description5.setStyleSheet('color:#DF3A01')
-
-        self.additionalDescription = QLabel()
 
         totalBox = QVBoxLayout()
-        totalBox.addWidget(description)
+        totalBox.addWidget(label_notice)
+        totalBox.addWidget(label_sub_notice)
+        totalBox.addWidget(description1)
         totalBox.addWidget(description2)
         totalBox.addWidget(description3)
-        totalBox.addWidget(description4)
-        totalBox.addWidget(self.description5)
-        totalBox.addWidget(self.additionalDescription)
 
         totalBox.addLayout(hBox)
         '''
@@ -172,7 +170,7 @@ class UiDialog(QWidget):
 
         self.setLayout(totalBox)
         self.setWindowTitle('PickCounter')
-        relativePath = 'imgs\\PC_icon2.png'
+        relativePath = 'assets\\PC_icon2.png'
         self.setWindowIcon(QIcon(self.resource_path(relativePath)))
 
 
@@ -211,7 +209,7 @@ class UiDialog(QWidget):
                             rankText.setFont(rankFont)
 
                             widgetLayout.addWidget(rankText)
-                            relativePath = 'imgs\\' + filename
+                            relativePath = 'assets\\' + filename
                             pixmap = QPixmap(self.resource_path(relativePath))
 
                             smaller_pixmap = pixmap.scaled(75, 75)
@@ -232,15 +230,7 @@ class UiDialog(QWidget):
                     break
 
         except Exception as e:
-            print('updateRecommendChampions error', e)
-
-    def updateDescription(self, description):
-        item = QListWidgetItem()
-        item.setText(description)
-        self.listWidget.addItem(item)
-
-        self.additionalDescription.setText(description)
-        self.description5.setText(description)
+            print('updateRecommendChampions error`', e)
 
     def onApplyBtnClick(self):
         try:
@@ -275,10 +265,11 @@ class UiDialog(QWidget):
             recommendList = LoLSocketClient.requestRecommendChampionList(position, summonerName, ourPickList, yourPickList,
                                                                          ourBanList, yourBanList)
         except Exception as e:
-            self.updateDescription(str(e))
             print(str(e))
 
         self.updateRecommendChampions(recommendList)
+        self.listWidget.raise_()
+        self.listWidget.activateWindow()
 
         print('final result\n', recommendList)
 

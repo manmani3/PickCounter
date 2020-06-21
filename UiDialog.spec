@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['UiDialog.py'],
-             pathex=['C:\\Users\\YunJeongHyeon\\Desktop\\아주대 과제\\융합시스템종합설계\\PickCounter'],
+             pathex=['C:\\Users\\YunJeongHyeon\\Desktop\\AjouUniversity\\융시종설\\PickCounter'],
              binaries=[],
-             datas=[("./assets/*.png", "./imgs")],
+             datas=[("./assets/*.png", "./assets"), ("*.ttf", ".")],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
