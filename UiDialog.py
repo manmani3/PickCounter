@@ -4,7 +4,7 @@
 import sys
 import os
 
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QFontDatabase
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, \
     QListWidget, QListWidgetItem, QTextEdit, QRadioButton, QLayout
 
@@ -25,6 +25,11 @@ class UiDialog(QWidget):
     def initUI(self):
         self.setGeometry(100, 100, 550, 600)
         self.setStyleSheet("background-color: #FFFFFF;")
+
+        fontDB = QFontDatabase()
+        fontDB.addApplicationFont('NanumSquareB.ttf')
+        fontDB.addApplicationFont('NanumSquareEB.ttf')
+
         positionLabel = QLabel('추천받을 포지션')
         titleFont = positionLabel.font()
         titleFont.setPointSize(19)
@@ -167,7 +172,8 @@ class UiDialog(QWidget):
 
         self.setLayout(totalBox)
         self.setWindowTitle('PickCounter')
-        self.setWindowIcon(QIcon("PC_icon2.png"))
+        relativePath = 'imgs\\PC_icon2.png'
+        self.setWindowIcon(QIcon(self.resource_path(relativePath)))
 
 
     def updateRecommendChampions(self, champList):
@@ -205,7 +211,7 @@ class UiDialog(QWidget):
                             rankText.setFont(rankFont)
 
                             widgetLayout.addWidget(rankText)
-                            relativePath = '.\\assets\\' + filename
+                            relativePath = 'imgs\\' + filename
                             pixmap = QPixmap(self.resource_path(relativePath))
 
                             smaller_pixmap = pixmap.scaled(75, 75)
@@ -270,6 +276,7 @@ class UiDialog(QWidget):
                                                                          ourBanList, yourBanList)
         except Exception as e:
             self.updateDescription(str(e))
+            print(str(e))
 
         self.updateRecommendChampions(recommendList)
 

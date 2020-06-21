@@ -70,6 +70,6 @@ def cropImages(image) :
             b_pos['start_x'] += b_pos['margin']
             b_pos['enemy_x'] += b_pos['margin']
         except Exception as ex:
-            print('cropImages:exception in image crop', ex)
+            print('cropImages:exception in image crop::', ex)
 
     return our_b, our_p, enemy_b, enemy_p

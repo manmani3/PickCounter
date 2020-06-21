@@ -1,15 +1,26 @@
+import os
+import sys
+
 import cv2 as cv
 import numpy as np
 import getChampion
-from matplotlib import pyplot as plt
 
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def matching(pilImageList):
     result = []
 
     # 1) 캡처 이미지 가져옴
-    ordImg = cv.imread("./sprite-champion-set.png", cv.IMREAD_GRAYSCALE)
+    relativePath = 'imgs\\sprite-champion-set.png'
+    print('resource_path : ', resource_path(relativePath))
+    ordImg = cv.imread(resource_path(relativePath), cv.IMREAD_GRAYSCALE)
     #capturedImg = cv.imread(path, cv.IMREAD_GRAYSCALE)
     for pilImage in pilImageList:
         capturedImg = cv.cvtColor(np.array(pilImage), cv.COLOR_RGB2GRAY)
